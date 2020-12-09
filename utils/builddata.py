@@ -4,7 +4,8 @@ import dlib
 import numpy as np
 import shutil
 import random
-import tensorflow as tf
+# import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import keras
 from time import time
 from collections import Counter

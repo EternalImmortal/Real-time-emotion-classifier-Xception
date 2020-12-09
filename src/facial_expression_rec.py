@@ -24,58 +24,58 @@ base_path = parent_path + '/trained_models/emotion_models/'
 # variables
 num_classes = 8  # angry, disgust, fear, happy, sad, surprise, neutral,contempt
 emotion_labels = ['neutral', 'anger', 'contempt', 'disgust',
-              'fear', 'happy', 'sadness', 'surprise']
+                  'fear', 'happy', 'sadness', 'surprise']
 batch_size = 16
 epochs = 500
 # ------------------------------
-#------------------------------------------------
+# ------------------------------------------------
 # read the CK+ facial expression dataset
-train_data_dir ='../data/emotion_image/train'
+train_data_dir = '../data/emotion_image/train'
 validation_data_dir = '../data/emotion_image/test'
-save_to_dir='../data/emotion_image/train_aug'
+save_to_dir = '../data/emotion_image/train_aug'
 try:
     os.makedirs(save_to_dir)
 except OSError:
     pass
 img_width, img_height = 224, 224
 train_datagen = ImageDataGenerator(
-        featurewise_center=False,
-        featurewise_std_normalization=False,
-        samplewise_center=False,
-        brightness_range=(0.05,0.25),
-        rescale=1./255,
-        rotation_range=10,
-        width_shift_range=0.1,
-        height_shift_range=0.1,
-        zoom_range=0.1,
-        horizontal_flip=True)
+    featurewise_center=False,
+    featurewise_std_normalization=False,
+    samplewise_center=False,
+    brightness_range=(0.05, 0.25),
+    rescale=1. / 255,
+    rotation_range=10,
+    width_shift_range=0.1,
+    height_shift_range=0.1,
+    zoom_range=0.1,
+    horizontal_flip=True)
 
 test_datagen = ImageDataGenerator(
-        rescale=1./255,
-        rotation_range=10,
-        width_shift_range=0.1,
-        height_shift_range=0.1,
-        # zoom_range=0.1,
-        horizontal_flip=True
-        )
+    rescale=1. / 255,
+    rotation_range=10,
+    width_shift_range=0.1,
+    height_shift_range=0.1,
+    # zoom_range=0.1,
+    horizontal_flip=True
+)
 
 train_generator = train_datagen.flow_from_directory(
-        directory=train_data_dir,
-        target_size=(img_width, img_height),
-        batch_size=batch_size,
-        class_mode='categorical',
-        # save_to_dir='../data/emotion_image/train_aug',
-        # save_prefix='aug',
-        # classes= emotion_labels,
-        # save_format='png'
-        )
+    directory=train_data_dir,
+    target_size=(img_width, img_height),
+    batch_size=batch_size,
+    class_mode='categorical',
+    # save_to_dir='../data/emotion_image/train_aug',
+    # save_prefix='aug',
+    # classes= emotion_labels,
+    # save_format='png'
+)
 
 validation_generator = test_datagen.flow_from_directory(
-        directory= validation_data_dir,
-        target_size=(img_width, img_height),
-        batch_size=batch_size,
-        # classes=emotion_labels,
-        class_mode='categorical')
+    directory=validation_data_dir,
+    target_size=(img_width, img_height),
+    batch_size=batch_size,
+    # classes=emotion_labels,
+    class_mode='categorical')
 
 if K.image_data_format() == 'channels_first':
     input_shape = (3, img_width, img_height)
@@ -84,7 +84,7 @@ else:
 
 print(train_generator.n, 'trian samples')
 print(validation_generator.n, 'validation samples')
-#------------------------------------------------
+# ------------------------------------------------
 # ------------------------------
 # construct CNN structure
 # input_shape = x_train[0].shape
@@ -96,7 +96,7 @@ model.add(MaxPooling2D(pool_size=(2, 2), strides=(4, 4)))
 
 # 2nd convolution layer
 model.add(Conv2D(64, (5, 5), activation='relu'))
-model.add(MaxPooling2D(pool_size=(2,2),strides=(2,2)))
+model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
 
 model.add(Flatten())
 
@@ -114,16 +114,17 @@ model.compile(loss='categorical_crossentropy'
               )
 model_names = './weights.h5'
 model_checkpoint = ModelCheckpoint(model_names, 'val_acc', verbose=1,
-                                       save_best_only=True)
+                                   save_best_only=True)
 callbacks = [model_checkpoint]
 model.fit_generator(train_generator,
-                        steps_per_epoch=train_generator.n/batch_size,
-                        verbose=1,
-                        validation_data=validation_generator,
-                        epochs=epochs,
-                        callbacks=callbacks)  # train for randomly selected one
+                    steps_per_epoch=train_generator.n / batch_size,
+                    verbose=1,
+                    validation_data=validation_generator,
+                    epochs=epochs,
+                    callbacks=callbacks)  # train for randomly selected one
 
-#-------------------------------------------
+
+# -------------------------------------------
 # construct the pretrained model vgg16 resnet50
 #
 # keras.backend.set_image_dim_ordering('tf')
@@ -236,22 +237,21 @@ model.fit_generator(train_generator,
 # ------------------------------
 # plot the training history parameters
 def plot_training(history):
-  acc = history.history['acc']
-  val_acc = history.history['val_acc']
-  loss = history.history['loss']
-  val_loss = history.history['val_loss']
-  epochs = range(len(acc))
+    acc = history.history['acc']
+    val_acc = history.history['val_acc']
+    loss = history.history['loss']
+    val_loss = history.history['val_loss']
+    epochs = range(len(acc))
 
-  plt.plot(epochs, acc, 'r.')
-  plt.plot(epochs, val_acc, 'r')
-  plt.title('Training and validation accuracy')
+    plt.plot(epochs, acc, 'r.')
+    plt.plot(epochs, val_acc, 'r')
+    plt.title('Training and validation accuracy')
 
-  plt.figure()
-  plt.plot(epochs, loss, 'r.')
-  plt.plot(epochs, val_loss, 'r-')
-  plt.title('Training and validation loss')
-  plt.show()
-
+    plt.figure()
+    plt.plot(epochs, loss, 'r.')
+    plt.plot(epochs, val_loss, 'r-')
+    plt.title('Training and validation loss')
+    plt.show()
 
 
 # ------------------------------
@@ -266,7 +266,6 @@ def emotion_analysis(emotions):
     plt.title('emotion')
 
     plt.show()
-
 
 # ------------------------------
 # ------------------------------
@@ -289,4 +288,3 @@ def emotion_analysis(emotions):
 # plt.imshow(x)
 # plt.show()
 # ------------------------------
-

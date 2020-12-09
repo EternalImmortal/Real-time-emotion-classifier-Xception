@@ -2,10 +2,10 @@ import cv2
 import dlib
 import numpy as np
 from keras.models import load_model
-from utils.inference import detect_faces
-from utils.inference import apply_offsets
-from utils.inference import load_detection_model
-from utils.inference import draw_bounding_box
+# from utils.inference import detect_faces
+# from utils.inference import apply_offsets
+# from utils.inference import load_detection_model
+# from utils.inference import draw_bounding_box
 from mxnet.gluon import nn
 from utils.builddata import preprocess_input
 from collections import namedtuple
